@@ -1,0 +1,11 @@
+# Поскольку проект учебный, было принято решение позволить
+# определять пользователя и пароль в конфигурационном файле,
+# для более удобного использования.
+
+postgres:
+  host: "localhost"
+  port: "5100"
+  user: "user"
+  password: "user"
+  dbname: "wb_storage"
+  containername: "postgres_container"
