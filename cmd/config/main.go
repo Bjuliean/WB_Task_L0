@@ -14,16 +14,16 @@ import (
 )
 
 type Config struct {
-	Postgres	PostgresConfig	`yaml:"postgres"`
+	Postgres PostgresConfig `yaml:"postgres"`
 }
 
 type PostgresConfig struct {
-	Host	  		string		`yaml:"host"`
-	Port	  		string		`yaml:"port"`
-	User	  		string		`yaml:"user"`
-	Password  		string		`yaml:"password"`
-	DBName	  		string		`yaml:"dbname"`
-	ContainerName	string		`yaml:"containername"`
+	Host          string `yaml:"host"`
+	Port          string `yaml:"port"`
+	User          string `yaml:"user"`
+	Password      string `yaml:"password"`
+	DBName        string `yaml:"dbname"`
+	ContainerName string `yaml:"containername"`
 }
 
 func main() {
@@ -32,16 +32,16 @@ func main() {
 
 	cfg := createCfg()
 
-	text := fmt.Sprintf("POSTGRES_PORTS=%s\n" +
-						"POSTGRES_USER=%s\n" +
-						"POSTGRES_PASSWORD=%s\n" +
-						"POSTGRES_DB=%s\n" +
-						"POSTGRES_CONTAINER_NAME=%s",
-						cfg.Postgres.Port,
-					    cfg.Postgres.User,
-						cfg.Postgres.Password,
-						cfg.Postgres.DBName,
-						cfg.Postgres.ContainerName)
+	text := fmt.Sprintf("POSTGRES_PORTS=%s\n"+
+		"POSTGRES_USER=%s\n"+
+		"POSTGRES_PASSWORD=%s\n"+
+		"POSTGRES_DB=%s\n"+
+		"POSTGRES_CONTAINER_NAME=%s",
+		cfg.Postgres.Port,
+		cfg.Postgres.User,
+		cfg.Postgres.Password,
+		cfg.Postgres.DBName,
+		cfg.Postgres.ContainerName)
 
 	file, err := os.Create(".env")
 	if err != nil {

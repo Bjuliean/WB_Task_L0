@@ -14,7 +14,6 @@ CREATE TABLE IF NOT EXISTS orders(
 
 CREATE TABLE IF NOT EXISTS items(
     order_uid UUID NOT NULL REFERENCES orders(order_uid),
-    item_id SERIAL PRIMARY KEY,
     chrt_id INTEGER NOT NULL,
     track_number VARCHAR(255) NOT NULL REFERENCES orders(track_number),
     price DECIMAL NOT NULL CHECK(price >= 0),
@@ -35,7 +34,7 @@ CREATE TABLE IF NOT EXISTS payments(
     currency VARCHAR(10) NOT NULL,
     "provider" VARCHAR(255) NOT NULL,
     amount INTEGER NOT NULL,
-    payment_dt TIMESTAMP NOT NULL,
+    payment_dt BIGINT NOT NULL,
     bank VARCHAR(255) NOT NULL,
     delivery_cost DECIMAL NOT NULL CHECK(delivery_cost >= 0),
     goods_total INTEGER NOT NULL CHECK(goods_total >= 0),
