@@ -1,6 +1,11 @@
 package config
 
-import "os"
+import (
+	"log"
+	"os"
+
+	"github.com/ilyakaznacheev/cleanenv"
+)
 
 type Config struct {
 	Postgres	PostgresConfig	`yaml:"postgres"`
@@ -16,12 +21,16 @@ type PostgresConfig struct {
 func New() *Config {
 	const ferr = "internal.config.New"
 	
-	//var cfg Config
+	var cfg Config
 
 	cfgPath := os.Getenv("CONFIG_PATH")
 	if cfgPath == "" {
-
+		log.Fatalf("%s: CONFIG_PATH is not exists")
 	}
 
-	return nil
+	if err := cleanenv.ReadConfig(cfgPath, &cfg); err != nil {
+		log.Fatalf("%s: error while reading config: %s", ferr, err.Error())
+	}
+
+	return &cfg
 }

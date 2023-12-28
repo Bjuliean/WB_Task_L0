@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"wbl0/WB_Task_L0/internal/config"
 	"wbl0/WB_Task_L0/internal/logs"
 )
 
@@ -11,6 +13,8 @@ const(
 func main() {
 	logsHandler := logs.New(logsPath)
 	defer logsHandler.Close()
-	logsHandler.WriteInfo("AAAAA")
-	logsHandler.WriteError("DDDDDD")
+	
+	cfg := config.New()
+
+	fmt.Println(cfg.Postgres)
 }
