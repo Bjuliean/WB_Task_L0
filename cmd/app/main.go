@@ -1,7 +1,16 @@
 package main
 
-import "fmt"
+import (
+	"wbl0/WB_Task_L0/internal/logs"
+)
+
+const(
+	logsPath = "./logs/logs.txt"
+)
 
 func main() {
-	fmt.Println("HELLO")
+	logsHandler := logs.New(logsPath)
+	defer logsHandler.Close()
+	logsHandler.WriteInfo("AAAAA")
+	logsHandler.WriteError("DDDDDD")
 }
