@@ -27,8 +27,8 @@ type PostgresConfig struct {
 }
 
 func main() {
-	
-	const ferr = "cmd/config/main"
+
+	const ferr = "cmd.config.main"
 
 	cfg := createCfg()
 
@@ -53,7 +53,7 @@ func main() {
 }
 
 func createCfg() *Config {
-	const ferr = "cmd/config/createCfg"
+	const ferr = "cmd.config.createCfg"
 
 	cfgPath := os.Getenv("CONFIG_PATH")
 
