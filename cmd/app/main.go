@@ -12,6 +12,8 @@ import (
 	"wbl0/WB_Task_L0/internal/logs"
 	"wbl0/WB_Task_L0/internal/models"
 	"wbl0/WB_Task_L0/internal/storage"
+
+	"github.com/google/uuid"
 )
 
 const (
@@ -42,15 +44,8 @@ func main() {
 
 	err = db.CreateOrder(o)
 
-	uhah, err := db.GetOrders()
-	if err != nil {
-		log.Fatalf("marshal err: %s", err.Error())
-	}
-	for _, item := range uhah {
-		fmt.Println(item)
-	}
+	a, _ := uuid.Parse("d161bf21-dc63-41af-90d2-b025d1d49f4d")
+	uhah, err := db.GetOrder(a)
+	fmt.Println(uhah)
 
-	if err != nil {
-		log.Fatalf("failed to create order: %s", err.Error())
-	}
 }

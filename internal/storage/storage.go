@@ -9,6 +9,7 @@ import (
 	"wbl0/WB_Task_L0/internal/logs"
 	"wbl0/WB_Task_L0/internal/models"
 
+	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 )
 
@@ -122,6 +123,33 @@ func (s *Storage) GetOrders() ([]models.Order, error) {
 	}
 
 	return res, nil
+}
+
+func (s *Storage) GetOrder(uid uuid.UUID) (*models.Order, error) {
+	const ferr = "internal.storage.GetOrder"
+	var res models.Order
+
+	st, err := s.db.Prepare("SELECT * FROM orders WHERE order_uid = $1;")
+	if err != nil {
+		s.logsHandler.WriteError(ferr, err.Error())
+		return nil, err
+	}
+
+	err = st.QueryRow(uid).Scan(&res.OrderUID, &res.TrackNumber, &res.Entry, &res.Locale,
+		&res.InternalSignature, &res.CustomerID, &res.DeliveryService, &res.Shardkey,
+		&res.SmID, &res.DateCreated, &res.OOFShard)
+	if err != nil {
+		s.logsHandler.WriteError(ferr, err.Error())
+		return nil, err
+	}
+
+	err = s.assembleOrder(&res)
+	if err != nil {
+		s.logsHandler.WriteError(ferr, err.Error())
+		return nil, err
+	}
+
+	return &res, nil
 }
 
 func (s *Storage) assembleOrder(order *models.Order) error {
