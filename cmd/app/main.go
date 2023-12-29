@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"wbl0/WB_Task_L0/internal/broker"
 	"wbl0/WB_Task_L0/internal/config"
 	"wbl0/WB_Task_L0/internal/logs"
 	"wbl0/WB_Task_L0/internal/models"
@@ -28,6 +29,9 @@ func main() {
 
 	db := storage.New(cfg, logsHandler)
 	defer db.CloseConnection()
+
+	nats := broker.New(cfg, logsHandler)
+	defer nats.CloseConnection()
 
 	file, err := os.Open("./misc/test1.json") // model, test2
 

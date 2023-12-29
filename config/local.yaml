@@ -9,3 +9,9 @@ postgres:
   password: "user"
   dbname: "wb_storage"
   containername: "postgres_container"
+nats_streaming:
+  host: "localhost"
+  port: "4200"
+  client_id: "1"
+  cluster_id: "show_orders_cluster"
+  containername: "nats-streaming_container"

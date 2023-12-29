@@ -8,20 +8,28 @@ import (
 )
 
 type Config struct {
-	Postgres	PostgresConfig	`yaml:"postgres"`
+	Postgres      PostgresConfig      `yaml:"postgres"`
+	NatsStreaming NatsStreamingConfig `yaml:"nats_streaming"`
 }
 
 type PostgresConfig struct {
-	Host	  string		`yaml:"host"`
-	Port	  string		`yaml:"port"`
-	User	  string		`yaml:"user"`
-	Password  string		`yaml:"password"`
-	DBName	  string		`yaml:"dbname"`
+	Host     string `yaml:"host"`
+	Port     string `yaml:"port"`
+	User     string `yaml:"user"`
+	Password string `yaml:"password"`
+	DBName   string `yaml:"dbname"`
+}
+
+type NatsStreamingConfig struct {
+	Host      string `yaml:"host"`
+	Port      string `yaml:"port"`
+	ClientID  string `yaml:"client_id"`
+	ClusterID string `yaml:"cluster_id"`
 }
 
 func New() *Config {
 	const ferr = "internal.config.New"
-	
+
 	var cfg Config
 
 	cfgPath := os.Getenv("CONFIG_PATH")

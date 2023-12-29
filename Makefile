@@ -12,6 +12,10 @@ init_config:
 test: clean
 	sudo docker-compose up
 
+tc: init_config
+	sudo docker compose config
+
+
 clean:
 	sudo docker-compose down
 	sudo docker container prune

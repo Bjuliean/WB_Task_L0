@@ -14,7 +14,8 @@ import (
 )
 
 type Config struct {
-	Postgres PostgresConfig `yaml:"postgres"`
+	Postgres      PostgresConfig      `yaml:"postgres"`
+	NatsStreaming NatsStreamingConfig `yaml:"nats_streaming"`
 }
 
 type PostgresConfig struct {
@@ -23,6 +24,14 @@ type PostgresConfig struct {
 	User          string `yaml:"user"`
 	Password      string `yaml:"password"`
 	DBName        string `yaml:"dbname"`
+	ContainerName string `yaml:"containername"`
+}
+
+type NatsStreamingConfig struct {
+	Host          string `yaml:"host"`
+	Port          string `yaml:"port"`
+	ClientID      string `yaml:"client_id"`
+	ClusterID     string `yaml:"cluster_id"`
 	ContainerName string `yaml:"containername"`
 }
 
@@ -36,12 +45,18 @@ func main() {
 		"POSTGRES_USER=%s\n"+
 		"POSTGRES_PASSWORD=%s\n"+
 		"POSTGRES_DB=%s\n"+
-		"POSTGRES_CONTAINER_NAME=%s",
+		"POSTGRES_CONTAINER_NAME=%s\n"+
+		"NATS_CLUSTER=%s\n"+
+		"NATS_PORTS=%s\n"+
+		"NATS_CONTAINER_NAME=%s\n",
 		cfg.Postgres.Port,
 		cfg.Postgres.User,
 		cfg.Postgres.Password,
 		cfg.Postgres.DBName,
-		cfg.Postgres.ContainerName)
+		cfg.Postgres.ContainerName,
+		cfg.NatsStreaming.ClusterID,
+		cfg.NatsStreaming.Port,
+		cfg.NatsStreaming.ContainerName)
 
 	file, err := os.Create(".env")
 	if err != nil {

@@ -19,7 +19,7 @@ func New(pathToOutputFile string) *Logger {
 
 	file, err := os.OpenFile(pathToOutputFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, os.ModePerm)
 	if err != nil {
-		log.Fatalf("%s: cannot use or create logs file: %s", ferr, err.Error())
+		log.Fatalf("%s: cannot use or create log file: %s", ferr, err.Error())
 	}
 
 	return &Logger{
