@@ -27,7 +27,7 @@ func main() {
 	db := storage.New(cfg, logsHandler)
 	defer db.CloseConnection()
 
-	file, err := os.Open("./misc/test1.json")
+	file, err := os.Open("./misc/test1.json") // model, test2
 
 	byts, err := io.ReadAll(file)
 	if err != nil {

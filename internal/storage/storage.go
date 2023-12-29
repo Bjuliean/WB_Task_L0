@@ -55,26 +55,38 @@ func (s *Storage) CreateOrder(order models.Order) error {
 	const op = "internal.storage.CreateOrder"
 	ferr := op + fmt.Sprintf(" (%v)", order.OrderUID)
 
-	if err := s.pushOrder(order); err != nil {
+	tx, err := s.db.Begin()
+	if err != nil {
 		s.logsHandler.WriteError(ferr, err.Error())
+		tx.Rollback()
 		return err
 	}
 
-	if err := s.pushItems(order); err != nil {
+	if err := s.pushOrder(tx, order); err != nil {
 		s.logsHandler.WriteError(ferr, err.Error())
+		tx.Rollback()
 		return err
 	}
 
-	if err := s.pushPayment(order); err != nil {
+	if err := s.pushItems(tx, order); err != nil {
 		s.logsHandler.WriteError(ferr, err.Error())
+		tx.Rollback()
 		return err
 	}
 
-	if err := s.pushDelivery(order); err != nil {
+	if err := s.pushPayment(tx, order); err != nil {
 		s.logsHandler.WriteError(ferr, err.Error())
+		tx.Rollback()
 		return err
 	}
 
+	if err := s.pushDelivery(tx, order); err != nil {
+		s.logsHandler.WriteError(ferr, err.Error())
+		tx.Rollback()
+		return err
+	}
+
+	tx.Commit()
 	s.logsHandler.WriteInfo(fmt.Sprintf("order created: %v", order.OrderUID))
 
 	return nil
@@ -210,10 +222,10 @@ func (s *Storage) searchDelivery(order *models.Order) (models.Delivery, error) {
 	return res, nil
 }
 
-func (s *Storage) pushOrder(order models.Order) error {
+func (s *Storage) pushOrder(tx *sql.Tx, order models.Order) error {
 	const ferr = "internal.storage.pushOrder"
 
-	stOrder, err := s.db.Prepare("INSERT INTO orders(order_uid, track_number, entry, " +
+	stOrder, err := tx.Prepare("INSERT INTO orders(order_uid, track_number, entry, " +
 		"locale, internal_signature, customer_id, delivery_service, shardkey, sm_id, date_created, " +
 		"oof_shard) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);")
 	defer stOrder.Close()
@@ -234,10 +246,10 @@ func (s *Storage) pushOrder(order models.Order) error {
 	return nil
 }
 
-func (s *Storage) pushItems(order models.Order) error {
+func (s *Storage) pushItems(tx *sql.Tx, order models.Order) error {
 	const ferr = "internal.storage.pushItems"
 
-	stItems, err := s.db.Prepare("INSERT INTO items(order_uid, chrt_id, track_number, price, rid, " +
+	stItems, err := tx.Prepare("INSERT INTO items(order_uid, chrt_id, track_number, price, rid, " +
 		"name, sale, size, total_price, nm_id, brand, status) " +
 		"VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);")
 	defer stItems.Close()
@@ -260,10 +272,10 @@ func (s *Storage) pushItems(order models.Order) error {
 	return nil
 }
 
-func (s *Storage) pushPayment(order models.Order) error {
+func (s *Storage) pushPayment(tx *sql.Tx, order models.Order) error {
 	const ferr = "internal.storage.pushPayment"
 
-	stPayment, err := s.db.Prepare("INSERT INTO payments(order_uid, transaction, request_id, currency, " +
+	stPayment, err := tx.Prepare("INSERT INTO payments(order_uid, transaction, request_id, currency, " +
 		"provider, amount, payment_dt, bank, delivery_cost, goods_total, custom_fee) " +
 		"VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);")
 	defer stPayment.Close()
@@ -285,10 +297,10 @@ func (s *Storage) pushPayment(order models.Order) error {
 	return nil
 }
 
-func (s *Storage) pushDelivery(order models.Order) error {
+func (s *Storage) pushDelivery(tx *sql.Tx, order models.Order) error {
 	const ferr = "internal.storage.pushDelivery"
 
-	stDelivery, err := s.db.Prepare("INSERT INTO deliveries(order_uid, name, phone, zip, city, address, " +
+	stDelivery, err := tx.Prepare("INSERT INTO deliveries(order_uid, name, phone, zip, city, address, " +
 		"region, email) VALUES($1, $2, $3, $4, $5, $6, $7, $8);")
 	defer stDelivery.Close()
 
