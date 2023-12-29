@@ -52,7 +52,36 @@ func (s *Storage) CloseConnection() {
 }
 
 func (s *Storage) CreateOrder(order models.Order) error {
-	const ferr = "internal.storage.CreateOrder"
+	const op = "internal.storage.CreateOrder"
+	ferr := op + fmt.Sprintf(" (%v)", order.OrderUID)
+
+	if err := s.pushOrder(order); err != nil {
+		s.logsHandler.WriteError(ferr, err.Error())
+		return err
+	}
+
+	if err := s.pushItems(order); err != nil {
+		s.logsHandler.WriteError(ferr, err.Error())
+		return err
+	}
+
+	if err := s.pushPayment(order); err != nil {
+		s.logsHandler.WriteError(ferr, err.Error())
+		return err
+	}
+
+	if err := s.pushDelivery(order); err != nil {
+		s.logsHandler.WriteError(ferr, err.Error())
+		return err
+	}
+
+	s.logsHandler.WriteInfo(fmt.Sprintf("order created: %v", order.OrderUID))
+
+	return nil
+}
+
+func (s *Storage) pushOrder(order models.Order) error {
+	const ferr = "internal.storage.pushOrder"
 
 	stOrder, err := s.db.Prepare("INSERT INTO orders(order_uid, track_number, entry, " +
 		"locale, internal_signature, customer_id, delivery_service, shardkey, sm_id, date_created, " +
@@ -72,9 +101,15 @@ func (s *Storage) CreateOrder(order models.Order) error {
 		return err
 	}
 
-	stItems, err := s.db.Prepare("INSERT INTO items(chrt_id, track_number, price, rid, " +
+	return nil
+}
+
+func (s *Storage) pushItems(order models.Order) error {
+	const ferr = "internal.storage.pushItems"
+
+	stItems, err := s.db.Prepare("INSERT INTO items(order_uid, chrt_id, track_number, price, rid, " +
 		"name, sale, size, total_price, nm_id, brand, status) " +
-		"VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);")
+		"VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);")
 	defer stItems.Close()
 
 	if err != nil {
@@ -83,7 +118,7 @@ func (s *Storage) CreateOrder(order models.Order) error {
 	}
 
 	for _, item := range order.Items {
-		_, err := stItems.Exec(item.ChrtID, item.TrackNumber, item.Price, item.Rid,
+		_, err := stItems.Exec(order.OrderUID, item.ChrtID, item.TrackNumber, item.Price, item.Rid,
 			item.Name, item.Sale, item.Size, item.TotalPrice, item.NmID, item.Brand,
 			item.Status)
 		if err != nil {
@@ -92,9 +127,15 @@ func (s *Storage) CreateOrder(order models.Order) error {
 		}
 	}
 
-	stPayment, err := s.db.Prepare("INSERT INTO payments(transaction, request_id, currency, " +
+	return nil
+}
+
+func (s *Storage) pushPayment(order models.Order) error {
+	const ferr = "internal.storage.pushPayment"
+
+	stPayment, err := s.db.Prepare("INSERT INTO payments(order_uid, transaction, request_id, currency, " +
 		"provider, amount, payment_dt, bank, delivery_cost, goods_total, custom_fee) " +
-		"VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);")
+		"VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);")
 	defer stPayment.Close()
 
 	if err != nil {
@@ -102,7 +143,7 @@ func (s *Storage) CreateOrder(order models.Order) error {
 		return err
 	}
 
-	_, err = stPayment.Exec(order.Payment.Transaction, order.Payment.RequestID, order.Payment.Currency,
+	_, err = stPayment.Exec(order.OrderUID, order.Payment.Transaction, order.Payment.RequestID, order.Payment.Currency,
 		order.Payment.Provider, order.Payment.Amount, order.Payment.PaymentDT,
 		order.Payment.Bank, order.Payment.DeliveryCost, order.Payment.GoodsTotal,
 		order.Payment.CustomFee)
@@ -111,8 +152,14 @@ func (s *Storage) CreateOrder(order models.Order) error {
 		return err
 	}
 
-	stDelivery, err := s.db.Prepare("INSERT INTO deliveries(name, phone, zip, city, address, " +
-		"region, email) VALUES($1, $2, $3, $4, $5, $6, $7);")
+	return nil
+}
+
+func (s *Storage) pushDelivery(order models.Order) error {
+	const ferr = "internal.storage.pushDelivery"
+
+	stDelivery, err := s.db.Prepare("INSERT INTO deliveries(order_uid, name, phone, zip, city, address, " +
+		"region, email) VALUES($1, $2, $3, $4, $5, $6, $7, $8);")
 	defer stDelivery.Close()
 
 	if err != nil {
@@ -120,14 +167,12 @@ func (s *Storage) CreateOrder(order models.Order) error {
 		return err
 	}
 
-	_, err = stDelivery.Exec(order.Delivery.Name, order.Delivery.Phone, order.Delivery.Zip,
+	_, err = stDelivery.Exec(order.OrderUID, order.Delivery.Name, order.Delivery.Phone, order.Delivery.Zip,
 		order.Delivery.City, order.Delivery.Address, order.Delivery.Region, order.Delivery.Email)
 	if err != nil {
 		s.logsHandler.WriteError(ferr, err.Error())
 		return err
 	}
-
-	s.logsHandler.WriteInfo("order created")
 
 	return nil
 }

@@ -31,7 +31,7 @@ type Item struct {
 	Rid         string    `json:"rid"`
 	Name        string    `json:"name"`
 	Sale        float64   `json:"sale"`
-	Size        uint      `json:"size"`
+	Size        string    `json:"size"`
 	TotalPrice  float64   `json:"total_price"`
 	NmID        int       `json:"nm_id"`
 	Brand       string    `json:"brand"`

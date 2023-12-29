@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS orders(
 );
 
 CREATE TABLE IF NOT EXISTS items(
-    order_uid UUID REFERENCES orders(order_uid),
+    order_uid UUID NOT NULL,
     chrt_id INTEGER NOT NULL,
     track_number VARCHAR(255) NOT NULL REFERENCES orders(track_number),
     price DECIMAL NOT NULL CHECK(price >= 0),
@@ -24,11 +24,12 @@ CREATE TABLE IF NOT EXISTS items(
     total_price DECIMAL CHECK(total_price >= 0),
     nm_id INTEGER NOT NULL,
     brand VARCHAR(255) NOT NULL,
-    "status" INTEGER
+    "status" INTEGER,
+    FOREIGN KEY (order_uid) REFERENCES orders(order_uid) ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS payments(
-    order_uid UUID REFERENCES orders(order_uid),
+    order_uid UUID NOT NULL,
     "transaction" UUID NOT NULL PRIMARY KEY,
     request_id VARCHAR(255),
     currency VARCHAR(10) NOT NULL,
@@ -38,16 +39,18 @@ CREATE TABLE IF NOT EXISTS payments(
     bank VARCHAR(255) NOT NULL,
     delivery_cost DECIMAL NOT NULL CHECK(delivery_cost >= 0),
     goods_total INTEGER NOT NULL CHECK(goods_total >= 0),
-    custom_fee INTEGER NOT NULL
+    custom_fee INTEGER NOT NULL,
+    FOREIGN KEY (order_uid) REFERENCES orders(order_uid) ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS deliveries(
-    order_uid UUID REFERENCES orders(order_uid),
+    order_uid UUID NOT NULL,
     "name" VARCHAR(255) NOT NULL,
     phone VARCHAR(20),
     zip VARCHAR(255),
     city VARCHAR(255),
     "address" VARCHAR(255),
     region VARCHAR(255),
-    email VARCHAR(255)
+    email VARCHAR(255),
+    FOREIGN KEY (order_uid) REFERENCES orders(order_uid) ON UPDATE CASCADE
 );

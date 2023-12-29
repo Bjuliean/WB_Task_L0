@@ -1,8 +1,12 @@
 package main
 
+// b563feb7b2b84b6test
+
 import (
 	"encoding/json"
 	"fmt"
+	"io"
+
 	//"fmt"
 	"log"
 	"os"
@@ -25,11 +29,20 @@ func main() {
 	db := storage.New(cfg, logsHandler)
 	defer db.CloseConnection()
 
-	file, _ := os.Open("./misc/model.json")
-	var o models.Order
-	json.NewDecoder(file).Decode(&o)
+	file, err := os.Open("./misc/model.json")
+	
+	byts, err := io.ReadAll(file)
+	if err != nil {
+		log.Fatalf("read err: %s", err.Error())
+	}
 
-	err := db.CreateOrder(o)
+	var o models.Order
+	err = json.Unmarshal(byts, &o)
+	if err != nil {
+		log.Fatalf("marshal err: %s", err.Error())
+	}
+
+	err = db.CreateOrder(o)
 
 	fmt.Println(o)
 
