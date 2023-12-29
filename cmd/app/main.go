@@ -6,8 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-
-	//"fmt"
 	"log"
 	"os"
 	"wbl0/WB_Task_L0/internal/config"
@@ -16,21 +14,21 @@ import (
 	"wbl0/WB_Task_L0/internal/storage"
 )
 
-const(
+const (
 	logsPath = "./logs/logs.txt"
 )
 
 func main() {
 	logsHandler := logs.New(logsPath)
 	defer logsHandler.Close()
-	
+
 	cfg := config.New()
 
 	db := storage.New(cfg, logsHandler)
 	defer db.CloseConnection()
 
-	file, err := os.Open("./misc/model.json")
-	
+	file, err := os.Open("./misc/test1.json")
+
 	byts, err := io.ReadAll(file)
 	if err != nil {
 		log.Fatalf("read err: %s", err.Error())
@@ -44,7 +42,13 @@ func main() {
 
 	err = db.CreateOrder(o)
 
-	fmt.Println(o)
+	uhah, err := db.GetOrders()
+	if err != nil {
+		log.Fatalf("marshal err: %s", err.Error())
+	}
+	for _, item := range uhah {
+		fmt.Println(item)
+	}
 
 	if err != nil {
 		log.Fatalf("failed to create order: %s", err.Error())

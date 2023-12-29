@@ -80,6 +80,136 @@ func (s *Storage) CreateOrder(order models.Order) error {
 	return nil
 }
 
+func (s *Storage) GetOrders() ([]models.Order, error) {
+	const ferr = "internal.storage.GetOrders"
+	var res []models.Order
+
+	rowsOrder, err := s.db.Query("SELECT * FROM orders;")
+	if err != nil {
+		s.logsHandler.WriteError(ferr, err.Error())
+		return nil, err
+	}
+
+	for rowsOrder.Next() {
+		var singleOrder models.Order
+
+		err := rowsOrder.Scan(&singleOrder.OrderUID, &singleOrder.TrackNumber,
+			&singleOrder.Entry, &singleOrder.Locale, &singleOrder.InternalSignature,
+			&singleOrder.CustomerID, &singleOrder.DeliveryService, &singleOrder.Shardkey,
+			&singleOrder.SmID, &singleOrder.DateCreated, &singleOrder.OOFShard)
+		if err != nil {
+			s.logsHandler.WriteError(ferr, err.Error())
+			return nil, err
+		}
+		err = s.assembleOrder(&singleOrder)
+		if err != nil {
+			s.logsHandler.WriteError(ferr, err.Error())
+			return nil, err
+		}
+		res = append(res, singleOrder)
+	}
+
+	return res, nil
+}
+
+func (s *Storage) assembleOrder(order *models.Order) error {
+	const ferr = "internal.storage.assembleOrder"
+	var err error
+
+	order.Items, err = s.searchItems(order)
+	if err != nil {
+		s.logsHandler.WriteError(ferr, err.Error())
+		return err
+	}
+
+	order.Payment, err = s.searchPayment(order)
+	if err != nil {
+		s.logsHandler.WriteError(ferr, err.Error())
+		return err
+	}
+
+	order.Delivery, err = s.searchDelivery(order)
+	if err != nil {
+		s.logsHandler.WriteError(ferr, err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func (s *Storage) searchItems(order *models.Order) ([]models.Item, error) {
+	const ferr = "internal.storage.searchItems"
+	var res []models.Item
+
+	st, err := s.db.Prepare("SELECT * FROM items WHERE order_uid = $1;")
+	if err != nil {
+		s.logsHandler.WriteError(ferr, err.Error())
+		return []models.Item{}, err
+	}
+
+	rows, err := st.Query(order.OrderUID)
+	if err != nil {
+		s.logsHandler.WriteError(ferr, err.Error())
+		return []models.Item{}, err
+	}
+
+	for rows.Next() {
+		var singleItem models.Item
+
+		err := rows.Scan(&singleItem.OrderUID, &singleItem.ChrtID, &singleItem.TrackNumber,
+			&singleItem.Price, &singleItem.Rid, &singleItem.Name, &singleItem.Sale, &singleItem.Size,
+			&singleItem.TotalPrice, &singleItem.NmID, &singleItem.Brand, &singleItem.Status)
+		if err != nil {
+			s.logsHandler.WriteError(ferr, err.Error())
+			return []models.Item{}, err
+		}
+
+		res = append(res, singleItem)
+	}
+
+	return res, nil
+}
+
+func (s *Storage) searchPayment(order *models.Order) (models.Payment, error) {
+	const ferr = "internal.storage.searchPayment"
+	var res models.Payment
+
+	row, err := s.db.Prepare("SELECT * FROM payments WHERE order_uid = $1;")
+	if err != nil {
+		s.logsHandler.WriteError(ferr, err.Error())
+		return models.Payment{}, err
+	}
+	err = row.QueryRow(order.OrderUID).Scan(&res.OrderUID, &res.Transaction, &res.RequestID,
+		&res.Currency, &res.Provider, &res.Amount, &res.PaymentDT, &res.Bank, &res.DeliveryCost,
+		&res.GoodsTotal, &res.CustomFee)
+	if err != nil {
+		s.logsHandler.WriteError(ferr, err.Error())
+		return models.Payment{}, err
+	}
+
+	return res, nil
+}
+
+func (s *Storage) searchDelivery(order *models.Order) (models.Delivery, error) {
+	const ferr = "internal.storage.searchDelivery"
+	var res models.Delivery
+
+	row, err := s.db.Prepare("SELECT * FROM deliveries WHERE order_uid = $1;")
+	if err != nil {
+		s.logsHandler.WriteError(ferr, err.Error())
+		return models.Delivery{}, err
+	}
+
+	err = row.QueryRow(order.OrderUID).Scan(&res.OrderUID, &res.Name, &res.Phone, &res.Zip, &res.City,
+		&res.Address, &res.Region, &res.Email)
+	if err != nil {
+		s.logsHandler.WriteError(ferr, err.Error())
+		return models.Delivery{}, err
+	}
+
+	return res, nil
+}
+
 func (s *Storage) pushOrder(order models.Order) error {
 	const ferr = "internal.storage.pushOrder"
 
@@ -118,7 +248,7 @@ func (s *Storage) pushItems(order models.Order) error {
 	}
 
 	for _, item := range order.Items {
-		_, err := stItems.Exec(order.OrderUID, item.ChrtID, item.TrackNumber, item.Price, item.Rid,
+		_, err := stItems.Exec(order.OrderUID, item.ChrtID, order.TrackNumber, item.Price, item.Rid,
 			item.Name, item.Sale, item.Size, item.TotalPrice, item.NmID, item.Brand,
 			item.Status)
 		if err != nil {
