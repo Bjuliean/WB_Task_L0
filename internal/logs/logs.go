@@ -38,8 +38,8 @@ func (l *Logger)Close() {
 	l.logFile.Close()
 }
 
-func (l *Logger)WriteError(err string) {
-	l.logController.Error(fmt.Sprintf("%s\n", err))
+func (l *Logger)WriteError(ferr, err string) {
+	l.logController.Error(fmt.Sprintf("%s: %s\n", ferr, err))
 }
 
 func (l *Logger)WriteInfo(info string) {

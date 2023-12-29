@@ -16,6 +16,7 @@ type PostgresConfig struct {
 	Port	  string		`yaml:"port"`
 	User	  string		`yaml:"user"`
 	Password  string		`yaml:"password"`
+	DBName	  string		`yaml:"dbname"`
 }
 
 func New() *Config {
@@ -25,7 +26,7 @@ func New() *Config {
 
 	cfgPath := os.Getenv("CONFIG_PATH")
 	if cfgPath == "" {
-		log.Fatalf("%s: CONFIG_PATH is not exists")
+		log.Fatalf("%s: CONFIG_PATH is not exists", ferr)
 	}
 
 	if err := cleanenv.ReadConfig(cfgPath, &cfg); err != nil {

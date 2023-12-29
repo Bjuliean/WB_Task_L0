@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS orders(
 );
 
 CREATE TABLE IF NOT EXISTS items(
-    order_uid UUID NOT NULL REFERENCES orders(order_uid),
+    order_uid UUID REFERENCES orders(order_uid),
     chrt_id INTEGER NOT NULL,
     track_number VARCHAR(255) NOT NULL REFERENCES orders(track_number),
     price DECIMAL NOT NULL CHECK(price >= 0),
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS items(
 );
 
 CREATE TABLE IF NOT EXISTS payments(
-    order_uid UUID NOT NULL REFERENCES orders(order_uid),
+    order_uid UUID REFERENCES orders(order_uid),
     "transaction" UUID NOT NULL PRIMARY KEY,
     request_id VARCHAR(255),
     currency VARCHAR(10) NOT NULL,
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS payments(
 );
 
 CREATE TABLE IF NOT EXISTS deliveries(
-    order_uid UUID NOT NULL REFERENCES orders(order_uid),
+    order_uid UUID REFERENCES orders(order_uid),
     "name" VARCHAR(255) NOT NULL,
     phone VARCHAR(20),
     zip VARCHAR(255),
