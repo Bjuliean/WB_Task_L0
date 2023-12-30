@@ -1,13 +1,10 @@
 package main
 
 import (
-	//"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"os"
-
-	//"wbl0/WB_Task_L0/internal/models"
 
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/nats-io/stan.go"
@@ -41,8 +38,6 @@ func main() {
 		ferr     = "cmd.sender.main"
 		clientID = "2"
 	)
-
-	//var order models.Order
 
 	cfg := createCfg()
 

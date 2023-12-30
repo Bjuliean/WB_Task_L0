@@ -10,6 +10,7 @@ import (
 	"os"
 	"time"
 	"wbl0/WB_Task_L0/internal/broker"
+	"wbl0/WB_Task_L0/internal/cache"
 	"wbl0/WB_Task_L0/internal/config"
 	"wbl0/WB_Task_L0/internal/logs"
 	"wbl0/WB_Task_L0/internal/models"
@@ -32,7 +33,9 @@ func main() {
 	db := storage.New(cfg, logsHandler)
 	defer db.CloseConnection()
 
-	storageManager := storagemanager.New(db, logsHandler)
+	cache := cache.New(logsHandler)
+
+	storageManager := storagemanager.New(db, cache, logsHandler)
 
 	nats := broker.New(cfg, &storageManager, logsHandler)
 	nats.SubscribeAndHandle()
@@ -52,7 +55,7 @@ func main() {
 	}
 
 	err = db.CreateOrder(o)
-	time.Sleep(5 * time.Second)
+	time.Sleep(7 * time.Second)
 
 	a, _ := uuid.Parse("d101af40-dc63-51af-90d2-a125d1d49f4d")
 	uhah, _ := db.GetOrder(a)
