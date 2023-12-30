@@ -16,3 +16,8 @@ nats_streaming:
   cluster_id: "show_orders_cluster"
   subscribe_subject: "streaming_orders"
   containername: "nats-streaming_container"
+server:
+  host: "localhost"
+  port: "8081"
+  timeout: 4s
+  idle_timeout: 60s

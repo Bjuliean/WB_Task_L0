@@ -12,6 +12,9 @@ require (
 
 require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
+	github.com/ajg/form v1.5.1 // indirect
+	github.com/go-chi/chi/v5 v5.0.11 // indirect
+	github.com/go-chi/render v1.0.3 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/nats-io/nats.go v1.22.1 // indirect

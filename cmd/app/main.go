@@ -14,6 +14,7 @@ import (
 	"wbl0/WB_Task_L0/internal/config"
 	"wbl0/WB_Task_L0/internal/logs"
 	"wbl0/WB_Task_L0/internal/models"
+	"wbl0/WB_Task_L0/internal/server"
 	"wbl0/WB_Task_L0/internal/storage"
 	storagemanager "wbl0/WB_Task_L0/internal/storage_manager"
 
@@ -41,6 +42,9 @@ func main() {
 	nats.SubscribeAndHandle()
 	defer nats.CloseConnection()
 
+
+
+
 	file, err := os.Open("./misc/test1.json") // model, test2
 
 	byts, err := io.ReadAll(file)
@@ -55,10 +59,39 @@ func main() {
 	}
 
 	err = db.CreateOrder(o)
-	time.Sleep(7 * time.Second)
+	time.Sleep(0 * time.Second)
 
-	a, _ := uuid.Parse("d101af40-dc63-51af-90d2-a125d1d49f4d")
+	a, _ := uuid.Parse("d161bf21-dc63-41af-90d2-b025d1d49f4d")
 	uhah, _ := db.GetOrder(a)
 	fmt.Println(uhah)
+
+
+
+
+	srv := server.New(cfg, server.HFuncList{
+		OrderGetter: &storageManager,
+	})
+	srv.Start()
+
+
+	// router := chi.NewRouter()
+
+	// router.Use(middleware.Recoverer)
+	// router.Use(middleware.RequestID)
+	// router.Use(middleware.URLFormat)
+
+	// router.Get("/{order_uid}", func(w http.ResponseWriter, r *http.Request) {
+	// 	order_uid := chi.URLParam(r, "order_uid")
+	// 	uid_val, _ := uuid.Parse(order_uid)
+	// 	res, _ := storageManager.GetOrder(uid_val)
+	// 	render.JSON(w, r, res)
+	// })
+
+	// srv := http.Server{
+	// 	Addr:         fmt.Sprintf("%s:%s", cfg.Server.Host, cfg.Server.Port),
+	// 	Handler:      router,
+	// }
+
+	// srv.ListenAndServe()
 
 }

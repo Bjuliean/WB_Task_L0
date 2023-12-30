@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 	"os"
+	"time"
 
 	"github.com/ilyakaznacheev/cleanenv"
 )
@@ -10,6 +11,7 @@ import (
 type Config struct {
 	Postgres      PostgresConfig      `yaml:"postgres"`
 	NatsStreaming NatsStreamingConfig `yaml:"nats_streaming"`
+	Server        ServerConfig        `yaml:"server"`
 }
 
 type PostgresConfig struct {
@@ -26,6 +28,13 @@ type NatsStreamingConfig struct {
 	ClientID         string `yaml:"client_id"`
 	ClusterID        string `yaml:"cluster_id"`
 	SubscribeSubject string `yaml:"subscribe_subject"`
+}
+
+type ServerConfig struct {
+	Host        string        `yaml:"host"`
+	Port        string        `yaml:"port"`
+	Timeout     time.Duration `yaml:"timeout"`
+	IdleTimeout time.Duration `yaml:"idle_timeout"`
 }
 
 func New() *Config {

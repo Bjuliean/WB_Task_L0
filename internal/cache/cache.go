@@ -26,13 +26,12 @@ func (c *Cache) CreateOrder(order models.Order) error {
 	const ferr = "internal.cache.New"
 
 	c.mu.RLock()
-	defer c.mu.RUnlock()
-
 	if _, exists := c.storage[order.OrderUID.String()]; exists == true {
 		msg := fmt.Sprintf("%s (%v): already exists", ferr, order.OrderUID)
 		c.logsHandler.WriteInfo(msg)
 		return fmt.Errorf(msg)
 	}
+	c.mu.RUnlock()
 
 	c.mu.Lock()
 	defer c.mu.Unlock()
