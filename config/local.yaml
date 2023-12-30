@@ -14,4 +14,5 @@ nats_streaming:
   port: "4200"
   client_id: "1"
   cluster_id: "show_orders_cluster"
+  subscribe_subject: "streaming_orders"
   containername: "nats-streaming_container"

@@ -139,7 +139,8 @@ func (s *Storage) GetOrder(uid uuid.UUID) (*models.Order, error) {
 		&res.InternalSignature, &res.CustomerID, &res.DeliveryService, &res.Shardkey,
 		&res.SmID, &res.DateCreated, &res.OOFShard)
 	if err != nil {
-		s.logsHandler.WriteError(ferr, err.Error())
+		msg := fmt.Sprintf("%s (%v)", ferr, uid)
+		s.logsHandler.WriteError(msg, err.Error())
 		return nil, err
 	}
 

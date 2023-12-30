@@ -21,10 +21,11 @@ type PostgresConfig struct {
 }
 
 type NatsStreamingConfig struct {
-	Host      string `yaml:"host"`
-	Port      string `yaml:"port"`
-	ClientID  string `yaml:"client_id"`
-	ClusterID string `yaml:"cluster_id"`
+	Host             string `yaml:"host"`
+	Port             string `yaml:"port"`
+	ClientID         string `yaml:"client_id"`
+	ClusterID        string `yaml:"cluster_id"`
+	SubscribeSubject string `yaml:"subscribe_subject"`
 }
 
 func New() *Config {

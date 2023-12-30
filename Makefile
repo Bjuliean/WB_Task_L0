@@ -1,5 +1,6 @@
 SRC_APP=cmd/app/main.go
 SRC_CONFIG=cmd/config/main.go
+SRC_SENDER=cmd/sender/main.go
 
 export CONFIG_PATH=./config/local.yaml
 
@@ -15,6 +16,8 @@ test: clean
 tc: init_config
 	sudo docker compose config
 
+send:
+	go run $(SRC_SENDER)
 
 clean:
 	sudo docker-compose down

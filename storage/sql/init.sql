@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS payments(
 
 CREATE TABLE IF NOT EXISTS deliveries(
     order_uid UUID NOT NULL,
-    "name" VARCHAR(255) NOT NULL,
+    "name" VARCHAR(255),
     phone VARCHAR(20),
     zip VARCHAR(255),
     city VARCHAR(255),
