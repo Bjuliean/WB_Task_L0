@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+</head>
+<body class="text-bg-dark">
+    <body class="bg-body-tertiary">
+        
+    <div class="container">
+      <main>
+        <div class="py-5 text-center">
+          <h3><a href="/">Список заказов</a></h3>
+        </div>
+    
+        <div class="row g-5">
+          <div class="col-md-5 col-lg-4 order-md-last">
+            <h4 class="d-flex justify-content-between align-items-center mb-3">
+              <span class="text-primary">Товары</span>
+            </h4>
+            <ul class="list-group mb-3">
+                {{ range .Items }}
+
+                <li class="list-group-item d-flex justify-content-between lh-sm text-bg-dark">
+                    <div>
+                      <h6 class="my-0">Название: {{ .Name }}</h6>
+                      <h6 class="my-0">Бренд: "{{ .Brand }}"</h6>
+                      <h6 class="my-0">Размер: {{ .Size }}</h6> 
+                      <h6 class="my-0">Цена: {{ .Price }}$</h6> 
+                      <h6 class="my-0">Скидка: {{ .Sale }}%</h6>
+                      <h6 class="my-0">Итоговая стоимость: {{ .TotalPrice }}$</h6> 
+                    </div>
+                </li>
+
+                {{ end }}
+            </ul>
+
+          </div>
+
+          <div class="col-md-7 col-lg-8">
+            <h2 class="mb-3">Заказ № {{ .OrderUID }}</h2>
+            <form class="needs-validation" novalidate="">
+              <div class="row g-3">
+    
+                <hr class="my-4">
+
+                <div class="col-12">
+                  <h3>Контакты</h3>
+                  <h5 class="my-0">Имя: {{ .Delivery.Name }}</h5>
+                  <h5 class="my-0">Телефон: {{ .Delivery.Phone }}</h5>
+                  <h5 class="my-0">Почта: {{ .Delivery.Email }}</h5>
+                </div>
+    
+                <hr class="my-4">
+
+                <div class="col-12">
+                    <h3>Пункт назначения</h3>
+                    <h5 class="my-0">Регион: {{ .Delivery.Region }}</h5>
+                    <h5 class="my-0">Город: {{ .Delivery.City }}</h5>
+                    <h5 class="my-0">Адрес: {{ .Delivery.Address }}</h5>
+                    <h5 class="my-0">Служба доставки: {{ .DeliveryService }}</h5>
+                </div>
+    
+                <hr class="my-4">
+
+                <div class="col-12">
+                    <h3>Оплата</h3>
+                    <h5 class="my-0">Банк: {{ .Payment.Bank }}</h5>
+                    <h5 class="my-0">Провайдер: {{ .Payment.Provider }}</h5>
+                    <h5 class="my-0">Валюта: {{ .Payment.Currency }}</h5>
+                    <h5 class="my-0">Стоимость доставки: {{ .Payment.DeliveryCost }}</h5>
+                    <h5 class="my-0">Стоимость товаров: {{ .Payment.GoodsTotal }}</h5>
+                    <h5 class="my-0">Таможенная плата: {{ .Payment.CustomFee }}</h5>
+                    <h5 class="my-0">Итого: {{ .Payment.Amount }}</h5>
+                </div>
+    
+              <hr class="my-4">
+    
+              <h4 class="mb-3">Дата: {{.DateCreated}}</h4>
+    
+            </form>
+          </div>
+        </div>
+      </main>
+    </body>
+</body>
+</html>

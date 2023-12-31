@@ -14,17 +14,17 @@
         <div class="container">
           <p class="mt-4"><h1>Список заказов</h1></p>
           <div class="row row-cols-1 row-cols-md-3 gx-4 text-center">
-            <h4>OrderID</h4>
-            <h4>DeliveryService</h4>
-            <h4>DateCreated</h4>
+            <h4>Заказ</h4>
+            <h4>Адрес</h4>
+            <h4>Дата</h4>
           </div>
 
           <div class="row row-cols-1 row-cols-md-3 gx-4 text-center">
 
             {{ range . }}
 
-            <div class="col themed-grid-col">{{ .OrderUID }}</div>
-            <div class="col themed-grid-col">{{ .DeliveryService }}</div>
+            <div class="col themed-grid-col"><a href="/{{ .OrderUID }}">{{ .OrderUID }}</a></div>
+            <div class="col themed-grid-col">{{ .Delivery.Address }}</div>
             <div class="col themed-grid-col">{{ .DateCreated }}</div>
 
             {{ end }}
