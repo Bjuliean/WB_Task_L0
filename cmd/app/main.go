@@ -3,22 +3,22 @@ package main
 // b563feb7b2b84b6test
 
 import (
-	"encoding/json"
-	"fmt"
-	"io"
+	// "encoding/json"
+	// "fmt"
+	// "io"
 	"log"
-	"os"
-	"time"
+	// "os"
+	// "time"
 	"wbl0/WB_Task_L0/internal/broker"
 	"wbl0/WB_Task_L0/internal/cache"
 	"wbl0/WB_Task_L0/internal/config"
 	"wbl0/WB_Task_L0/internal/logs"
-	"wbl0/WB_Task_L0/internal/models"
+	//"wbl0/WB_Task_L0/internal/models"
 	"wbl0/WB_Task_L0/internal/server"
 	"wbl0/WB_Task_L0/internal/storage"
 	storagemanager "wbl0/WB_Task_L0/internal/storage_manager"
 
-	"github.com/google/uuid"
+	//"github.com/google/uuid"
 )
 
 const (
@@ -45,31 +45,33 @@ func main() {
 
 
 
-	file, err := os.Open("./misc/test1.json") // model, test2
+	// file, err := os.Open("./misc/test1.json") // model, test2
 
-	byts, err := io.ReadAll(file)
-	if err != nil {
-		log.Fatalf("read err: %s", err.Error())
-	}
+	// byts, err := io.ReadAll(file)
+	// if err != nil {
+	// 	log.Fatalf("read err: %s", err.Error())
+	// }
 
-	var o models.Order
-	err = json.Unmarshal(byts, &o)
-	if err != nil {
-		log.Fatalf("marshal err: %s", err.Error())
-	}
+	// var o models.Order
+	// err = json.Unmarshal(byts, &o)
+	// if err != nil {
+	// 	log.Fatalf("marshal err: %s", err.Error())
+	// }
 
-	err = db.CreateOrder(o)
-	time.Sleep(0 * time.Second)
+	// err = db.CreateOrder(o)
+	// time.Sleep(0 * time.Second)
 
-	a, _ := uuid.Parse("d161bf21-dc63-41af-90d2-b025d1d49f4d")
-	uhah, _ := db.GetOrder(a)
-	fmt.Println(uhah)
+	// a, _ := uuid.Parse("d161bf21-dc63-41af-90d2-b025d1d49f4d")
+	// uhah, _ := db.GetOrder(a)
+	// fmt.Println(uhah)
 
 
-
+	log.Print("SERVER STARTED...") //!!!!!!!!!!!!!!!!!!!!!!!!
 
 	srv := server.New(cfg, server.HFuncList{
 		OrderGetter: &storageManager,
+		OrdersGetter: &storageManager,
+		OrderSaver: &storageManager,
 	})
 	srv.Start()
 

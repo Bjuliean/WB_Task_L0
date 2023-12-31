@@ -2,11 +2,9 @@ package getorder
 
 import (
 	"fmt"
-	//"log"
 	"net/http"
 	"wbl0/WB_Task_L0/internal/models"
 	resp "wbl0/WB_Task_L0/internal/server/response"
-	//storagemanager "wbl0/WB_Task_L0/internal/storage_manager"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"

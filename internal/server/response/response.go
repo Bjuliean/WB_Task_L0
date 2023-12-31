@@ -5,9 +5,10 @@ import "net/http"
 type Status int
 
 const (
-	OK         Status = http.StatusOK
-	NotFound   Status = http.StatusNotFound
-	BadRequest Status = http.StatusBadRequest
+	OK            Status = http.StatusOK
+	NotFound      Status = http.StatusNotFound
+	BadRequest    Status = http.StatusBadRequest
+	InternalError Status = http.StatusInternalServerError
 )
 
 type Response struct {
