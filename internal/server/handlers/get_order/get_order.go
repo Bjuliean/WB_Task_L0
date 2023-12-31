@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"wbl0/WB_Task_L0/internal/models"
+	//"wbl0/WB_Task_L0/internal/server/renderer"
 	resp "wbl0/WB_Task_L0/internal/server/response"
 
 	"github.com/go-chi/chi/v5"
@@ -41,6 +42,7 @@ func New(orderGetter OrderGetter) http.HandlerFunc {
 			return
 		}
 
+		//renderer.ShowHomePage(&w, res) //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		render.JSON(w, r, res)
 	}
 }

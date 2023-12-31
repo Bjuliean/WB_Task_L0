@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/nats-io/stan.go"
@@ -35,23 +36,14 @@ type NatsStreamingConfig struct {
 
 func main() {
 	const (
-		ferr     = "cmd.sender.main"
-		clientID = "2"
+		ferr       = "cmd.sender.main"
+		clientID   = "2"
+		totalTests = 3
+		tFilesPath = "./misc/test"
 	)
 
 	cfg := createCfg()
-
-	file, err := os.Open("./misc/model.json")
-	if err != nil {
-		log.Printf("%s: failed to open files: %s", ferr, err.Error())
-		return
-	}
-
-	dt, err := io.ReadAll(file)
-	if err != nil {
-		log.Printf("%s: error while reading file: %s", ferr, err.Error())
-		return
-	}
+	var testFiles [][]byte
 
 	sc, err := stan.Connect(cfg.NatsStreaming.ClusterID, clientID, stan.NatsURL(fmt.Sprintf("%s:%s", cfg.NatsStreaming.Host, cfg.NatsStreaming.Port)))
 	if err != nil {
@@ -59,7 +51,46 @@ func main() {
 		return
 	}
 
-	err = sc.Publish(cfg.NatsStreaming.SubscribeSubject, dt)
+	for i := 0; i < totalTests; i++ {
+		filePath := tFilesPath + strconv.Itoa(i) + ".json"
+		file, err := os.Open(filePath)
+		if err != nil {
+			log.Printf("%s: failed to open files: %s", ferr, err.Error())
+			return
+		}
+
+		dt, err := io.ReadAll(file)
+		if err != nil {
+			log.Printf("%s: error while reading file: %s", ferr, err.Error())
+			return
+		}
+
+		testFiles = append(testFiles, dt)
+	}
+	
+	for _, test := range testFiles {
+		sc.Publish(cfg.NatsStreaming.SubscribeSubject, test)
+	}
+
+	// file, err := os.Open("./misc/model.json")
+	// if err != nil {
+	// 	log.Printf("%s: failed to open files: %s", ferr, err.Error())
+	// 	return
+	// }
+
+	// dt, err := io.ReadAll(file)
+	// if err != nil {
+	// 	log.Printf("%s: error while reading file: %s", ferr, err.Error())
+	// 	return
+	// }
+
+	// sc, err := stan.Connect(cfg.NatsStreaming.ClusterID, clientID, stan.NatsURL(fmt.Sprintf("%s:%s", cfg.NatsStreaming.Host, cfg.NatsStreaming.Port)))
+	// if err != nil {
+	// 	log.Printf("%s: failed to connect nats: %s", ferr, err.Error())
+	// 	return
+	// }
+
+	// err = sc.Publish(cfg.NatsStreaming.SubscribeSubject, dt)
 }
 
 func createCfg() *Config {
