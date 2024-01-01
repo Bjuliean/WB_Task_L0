@@ -10,7 +10,8 @@ import (
 )
 
 type Logger struct {
-	logController *logrus.Logger
+	logsToFile *logrus.Logger
+	logsToStd *logrus.Logger
 	logFile       *os.File
 }
 
@@ -23,8 +24,16 @@ func New(pathToOutputFile string) *Logger {
 	}
 
 	return &Logger{
-		logController: &logrus.Logger{
+		logsToFile: &logrus.Logger{
 			Out:   file,
+			Level: logrus.InfoLevel,
+			Formatter: &easy.Formatter{
+				TimestampFormat: "2006-01-02 15:04:05",
+				LogFormat:       "[%lvl%]: %time% - %msg%",
+			},
+		},
+		logsToStd: &logrus.Logger{
+			Out:   os.Stdout,
 			Level: logrus.InfoLevel,
 			Formatter: &easy.Formatter{
 				TimestampFormat: "2006-01-02 15:04:05",
@@ -39,9 +48,11 @@ func (l *Logger)Close() {
 }
 
 func (l *Logger)WriteError(ferr, err string) {
-	l.logController.Error(fmt.Sprintf("%s: %s\n", ferr, err))
+	l.logsToFile.Error(fmt.Sprintf("%s: %s\n", ferr, err))
+	l.logsToStd.Error(fmt.Sprintf("%s: %s\n", ferr, err))
 }
 
 func (l *Logger)WriteInfo(info string) {
-	l.logController.Info(fmt.Sprintf("%s\n", info))
+	l.logsToFile.Info(fmt.Sprintf("%s\n", info))
+	l.logsToStd.Info(fmt.Sprintf("%s\n", info))
 }
