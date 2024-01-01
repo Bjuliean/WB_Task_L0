@@ -30,7 +30,7 @@ func New(cfg *config.Config, logs *logs.Logger) *Storage {
 		log.Fatalf("%s: error while opening db: %s", ferr, err.Error())
 	}
 
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 10; i++ {
 		err = db.Ping()
 		if err == nil {
 			break
@@ -119,6 +119,7 @@ func (s *Storage) GetOrders() ([]models.Order, error) {
 			s.logsHandler.WriteError(ferr, err.Error())
 			return nil, err
 		}
+		singleOrder.DateCreated.Format("02 January 2006 15:04:05") //???
 		res = append(res, singleOrder)
 	}
 

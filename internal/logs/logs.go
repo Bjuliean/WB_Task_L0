@@ -10,9 +10,10 @@ import (
 )
 
 type Logger struct {
-	logsToFile *logrus.Logger
-	logsToStd *logrus.Logger
-	logFile       *os.File
+	logsToFile  *logrus.Logger
+	logsToStd   *logrus.Logger
+	logFile     *os.File
+	silenceMode bool
 }
 
 func New(pathToOutputFile string) *Logger {
@@ -32,6 +33,7 @@ func New(pathToOutputFile string) *Logger {
 				LogFormat:       "[%lvl%]: %time% - %msg%",
 			},
 		},
+		logFile: file,
 		logsToStd: &logrus.Logger{
 			Out:   os.Stdout,
 			Level: logrus.InfoLevel,
@@ -40,19 +42,28 @@ func New(pathToOutputFile string) *Logger {
 				LogFormat:       "[%lvl%]: %time% - %msg%",
 			},
 		},
+		silenceMode: false,
 	}
 }
 
-func (l *Logger)Close() {
+func (l *Logger) Close() {
 	l.logFile.Close()
 }
 
-func (l *Logger)WriteError(ferr, err string) {
-	l.logsToFile.Error(fmt.Sprintf("%s: %s\n", ferr, err))
-	l.logsToStd.Error(fmt.Sprintf("%s: %s\n", ferr, err))
+func (l *Logger) WriteError(ferr, err string) {
+	if l.silenceMode == false {
+		l.logsToFile.Error(fmt.Sprintf("%s: %s\n", ferr, err))
+		l.logsToStd.Error(fmt.Sprintf("%s: %s\n", ferr, err))
+	}
 }
 
-func (l *Logger)WriteInfo(info string) {
-	l.logsToFile.Info(fmt.Sprintf("%s\n", info))
-	l.logsToStd.Info(fmt.Sprintf("%s\n", info))
+func (l *Logger) WriteInfo(info string) {
+	if l.silenceMode == false {
+		l.logsToFile.Info(fmt.Sprintf("%s\n", info))
+		l.logsToStd.Info(fmt.Sprintf("%s\n", info))
+	}
+}
+
+func (l *Logger) SilenceOperatingMode(mode bool) {
+	l.silenceMode = mode
 }

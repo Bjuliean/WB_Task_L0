@@ -3,15 +3,15 @@
 # для более удобного использования.
 
 postgres:
-  host: "localhost"
-  port: "5100"
+  host: "postgres"
+  port: "5432"
   user: "user"
   password: "user"
   dbname: "wb_storage"
   containername: "postgres_container"
 nats_streaming:
-  host: "localhost"
-  port: "4200"
+  host: "nats-streaming"
+  port: "4222"
   client_id: "1"
   cluster_id: "show_orders_cluster"
   subscribe_subject: "streaming_orders"
@@ -21,3 +21,4 @@ server:
   port: "8080"
   timeout: 4s
   idle_timeout: 60s
+  containername: "server_container"

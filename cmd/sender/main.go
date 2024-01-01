@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"math/rand"
@@ -36,7 +35,7 @@ type NatsStreamingConfig struct {
 	ClientID         string `yaml:"client_id"`
 	ClusterID        string `yaml:"cluster_id"`
 	SubscribeSubject string `yaml:"subscribe_subject"`
-	ContainerName    string `yaml:"containername"`
+	ContainerName    string `yaml:"containername"`	
 }
 
 const (
@@ -44,7 +43,7 @@ const (
 	ferr       = "cmd.sender.main"
 	clientID   = "2"
 	totalTestsPrepared = 3
-	totalTestsRandom = 1000
+	totalTestsRandom = 300
 	tFilesPath = "./misc/test"
 	maxItemsQuantity = 30
 )
@@ -52,7 +51,7 @@ const (
 func main() {
 	cfg := createCfg()
 
-	sc, err := stan.Connect(cfg.NatsStreaming.ClusterID, clientID, stan.NatsURL(fmt.Sprintf("%s:%s", cfg.NatsStreaming.Host, cfg.NatsStreaming.Port)))
+	sc, err := stan.Connect(cfg.NatsStreaming.ClusterID, clientID)
 	if err != nil {
 		log.Printf("%s: failed to connect nats: %s", ferr, err.Error())
 		return

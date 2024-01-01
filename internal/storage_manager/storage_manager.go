@@ -2,6 +2,7 @@ package storagemanager
 
 import (
 	"fmt"
+	"log"
 	"wbl0/WB_Task_L0/internal/cache"
 	"wbl0/WB_Task_L0/internal/logs"
 	"wbl0/WB_Task_L0/internal/models"
@@ -17,6 +18,12 @@ type StorageManager struct {
 }
 
 func New(db *storage.Storage, cch *cache.Cache, logs *logs.Logger) StorageManager {
+	tmp, err := db.GetOrders()
+	if err != nil {
+		log.Fatalf("cache initialize failed")
+	}
+	cch.ReloadCache(tmp)
+	
 	return StorageManager{
 		database:     db,
 		cacheStorage: cch,
@@ -69,13 +76,11 @@ func (s *StorageManager) GetOrders() ([]models.Order, error) {
 
 	var res []models.Order
 
-	res, err := s.database.GetOrders()
+	res, err := s.cacheStorage.GetOrders()
 	if err != nil {
 		s.logsHandler.WriteError(ferr, err.Error())
 		return nil, err
-	}
-
-	s.cacheStorage.ReloadCache(res)
+	} 
 
 	return res, nil
 }

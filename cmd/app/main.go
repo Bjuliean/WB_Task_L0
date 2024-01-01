@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"wbl0/WB_Task_L0/internal/broker"
 	"wbl0/WB_Task_L0/internal/cache"
 	"wbl0/WB_Task_L0/internal/config"
@@ -17,32 +18,34 @@ const (
 func main() {
 	logsHandler := logs.New(logsPath)
 	defer logsHandler.Close()
+	//logsHandler.SilenceOperatingMode(true)
 
+	logsHandler.WriteInfo("loading config...")
 	cfg := config.New()
 
+	logsHandler.WriteInfo("connecting to database...")
 	db := storage.New(cfg, logsHandler)
 	defer db.CloseConnection()
-	logsHandler.WriteInfo("connected to database")
 
+	logsHandler.WriteInfo("creating cache...")
 	cache := cache.New(logsHandler)
-	logsHandler.WriteInfo("cache created")
-
 	storageManager := storagemanager.New(db, cache, logsHandler)
 
+	logsHandler.WriteInfo("connecting to nats-streaming...")
 	nats := broker.New(cfg, &storageManager, logsHandler)
 	nats.SubscribeAndHandle()
 	defer nats.CloseConnection()
-	logsHandler.WriteInfo("connected to nats-streaming")
 
 	srv := server.New(cfg, server.HFuncList{
-		OrderGetter: &storageManager,
+		OrderGetter:  &storageManager,
 		OrdersGetter: &storageManager,
-		OrderSaver: &storageManager,
+		OrderSaver:   &storageManager,
 	})
 
-	logsHandler.WriteInfo("SERVER STARTED")
+	logsHandler.WriteInfo(fmt.Sprintf("SERVER STARTED [%s:%s]",
+		cfg.Server.Host, cfg.Server.Port))
 
 	srv.Start()
-	
+
 	logsHandler.WriteInfo("SERVER CLOSED")
 }

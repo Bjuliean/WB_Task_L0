@@ -37,10 +37,11 @@ type NatsStreamingConfig struct {
 }
 
 type ServerConfig struct {
-	Host        string `yaml:"host"`
-	Port        string `yaml:"port"`
-	ReadTimeout string `yaml:"read_timeout"`
-	IdleTimeout string `yaml:"idle_timeout"`
+	Host          string `yaml:"host"`
+	Port          string `yaml:"port"`
+	ReadTimeout   string `yaml:"read_timeout"`
+	IdleTimeout   string `yaml:"idle_timeout"`
+	ContainerName string `yaml:"containername"`
 }
 
 func main() {
@@ -57,7 +58,8 @@ func main() {
 		"NATS_CLUSTER=%s\n"+
 		"NATS_PORTS=%s\n"+
 		"NATS_CONTAINER_NAME=%s\n"+
-		"SERVER_PORTS=%s\n",
+		"SERVER_PORTS=%s\n"+
+		"SERVER_CONTAINER_NAME=%s\n",
 		cfg.Postgres.Port,
 		cfg.Postgres.User,
 		cfg.Postgres.Password,
@@ -66,7 +68,8 @@ func main() {
 		cfg.NatsStreaming.ClusterID,
 		cfg.NatsStreaming.Port,
 		cfg.NatsStreaming.ContainerName,
-		cfg.Server.Port)
+		cfg.Server.Port,
+		cfg.Server.ContainerName)
 
 	file, err := os.Create(".env")
 	if err != nil {

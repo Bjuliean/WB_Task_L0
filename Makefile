@@ -13,6 +13,9 @@ init_config:
 test: clean
 	sudo docker-compose up
 
+t:
+	sudo docker exec -it server_container go run ./cmd/sender/main.go
+
 tc: init_config
 	sudo docker compose config
 
