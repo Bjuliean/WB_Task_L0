@@ -42,8 +42,6 @@ func New(orderGetter OrderGetter) http.HandlerFunc {
 			return
 		}
 
-		//renderer.ShowHomePage(&w, res) //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		//render.JSON(w, r, res)
 		renderer.ShowOrderPage(&w, res)
 	}
 }

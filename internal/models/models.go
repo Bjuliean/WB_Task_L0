@@ -44,11 +44,11 @@ type Payment struct {
 	RequestID    string    `json:"request_id"`
 	Currency     string    `json:"currency"`
 	Provider     string    `json:"provider"`
-	Amount       int       `json:"amount"`
+	Amount       float64   `json:"amount"`
 	PaymentDT    int       `json:"payment_dt"`
 	Bank         string    `json:"bank"`
 	DeliveryCost float64   `json:"delivery_cost"`
-	GoodsTotal   uint      `json:"goods_total"`
+	GoodsTotal   float64   `json:"goods_total"`
 	CustomFee    int       `json:"custom_fee"`
 }
 

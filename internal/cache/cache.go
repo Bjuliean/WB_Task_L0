@@ -17,7 +17,7 @@ type Cache struct {
 
 func New(logs *logs.Logger) *Cache {
 	return &Cache{
-		storage:     make(map[string]models.Order),
+		storage:     make(map[string]models.Order, 1000),
 		logsHandler: logs,
 	}
 }

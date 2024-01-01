@@ -34,11 +34,11 @@ CREATE TABLE IF NOT EXISTS payments(
     request_id VARCHAR(255),
     currency VARCHAR(10) NOT NULL,
     "provider" VARCHAR(255) NOT NULL,
-    amount INTEGER NOT NULL,
+    amount DECIMAL NOT NULL CHECK(amount >= 0),
     payment_dt BIGINT NOT NULL,
     bank VARCHAR(255) NOT NULL,
     delivery_cost DECIMAL NOT NULL CHECK(delivery_cost >= 0),
-    goods_total INTEGER NOT NULL CHECK(goods_total >= 0),
+    goods_total DECIMAL NOT NULL CHECK(goods_total >= 0),
     custom_fee INTEGER NOT NULL,
     FOREIGN KEY (order_uid) REFERENCES orders(order_uid) ON UPDATE CASCADE
 );
