@@ -72,25 +72,6 @@ func main() {
 		sc.Publish(cfg.NatsStreaming.SubscribeSubject, test)
 	}
 
-	// file, err := os.Open("./misc/model.json")
-	// if err != nil {
-	// 	log.Printf("%s: failed to open files: %s", ferr, err.Error())
-	// 	return
-	// }
-
-	// dt, err := io.ReadAll(file)
-	// if err != nil {
-	// 	log.Printf("%s: error while reading file: %s", ferr, err.Error())
-	// 	return
-	// }
-
-	// sc, err := stan.Connect(cfg.NatsStreaming.ClusterID, clientID, stan.NatsURL(fmt.Sprintf("%s:%s", cfg.NatsStreaming.Host, cfg.NatsStreaming.Port)))
-	// if err != nil {
-	// 	log.Printf("%s: failed to connect nats: %s", ferr, err.Error())
-	// 	return
-	// }
-
-	// err = sc.Publish(cfg.NatsStreaming.SubscribeSubject, dt)
 }
 
 func createCfg() *Config {
