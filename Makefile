@@ -8,9 +8,12 @@ export CONFIG_PATH=./config/local.yaml
 all: init_config
 	go run $(SRC_APP)
 
+start: clean init_config
+	cd scripts && ./server_open.sh &
+	sudo docker-compose up
+
 init_config:
 	go run $(SRC_CONFIG)
-	./server_open.sh
 
 test: clean
 	sudo docker-compose up
@@ -25,7 +28,7 @@ send:
 	go run $(SRC_SENDER)
 
 clean_ports:
-	./cleanports.sh
+	cd scripts && ./cleanports.sh
 
 clean:
 	sudo docker-compose down
