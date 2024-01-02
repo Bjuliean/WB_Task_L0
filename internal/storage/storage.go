@@ -30,7 +30,7 @@ func New(cfg *config.Config, logs *logs.Logger) *Storage {
 		log.Fatalf("%s: error while opening db: %s", ferr, err.Error())
 	}
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 15; i++ {
 		err = db.Ping()
 		if err == nil {
 			break

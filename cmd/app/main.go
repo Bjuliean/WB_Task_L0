@@ -18,7 +18,7 @@ const (
 func main() {
 	logsHandler := logs.New(logsPath)
 	defer logsHandler.Close()
-	//logsHandler.SilenceOperatingMode(true)
+	//logsHandler.SilenceOperatingMode(true) //-- Выключает логи
 
 	logsHandler.WriteInfo("loading config...")
 	cfg := config.New()

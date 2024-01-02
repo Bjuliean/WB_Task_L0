@@ -58,6 +58,7 @@ func main() {
 		"NATS_CLUSTER=%s\n"+
 		"NATS_PORTS=%s\n"+
 		"NATS_CONTAINER_NAME=%s\n"+
+		"SERVER_HOST=%s\n"+
 		"SERVER_PORTS=%s\n"+
 		"SERVER_CONTAINER_NAME=%s\n",
 		cfg.Postgres.Port,
@@ -68,6 +69,7 @@ func main() {
 		cfg.NatsStreaming.ClusterID,
 		cfg.NatsStreaming.Port,
 		cfg.NatsStreaming.ContainerName,
+		cfg.Server.Host,
 		cfg.Server.Port,
 		cfg.Server.ContainerName)
 

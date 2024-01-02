@@ -1,6 +1,8 @@
 # Поскольку проект учебный, было принято решение позволить
 # определять пользователя и пароль в конфигурационном файле,
 # для более удобного использования.
+# Хост и порт задаются для сети докера и не влияют на внутренние
+# конфигурационные файлы postgres и nats-streaming
 
 postgres:
   host: "postgres"
@@ -22,3 +24,27 @@ server:
   timeout: 4s
   idle_timeout: 60s
   containername: "server_container"
+
+
+
+# Запуск сервера без докера
+# postgres:
+#   host: "localhost"
+#   port: "5432"
+#   user: "user"
+#   password: "user"
+#   dbname: "wb_storage"
+#   containername: "postgres_container"
+# nats_streaming:
+#   host: "localhost"
+#   port: "4222"
+#   client_id: "1"
+#   cluster_id: "show_orders_cluster"
+#   subscribe_subject: "streaming_orders"
+#   containername: "nats-streaming_container"
+# server:
+#   host: "0.0.0.0"
+#   port: "8080"
+#   timeout: 4s
+#   idle_timeout: 60s
+#   containername: "server_container"

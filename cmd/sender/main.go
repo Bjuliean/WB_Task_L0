@@ -1,3 +1,8 @@
+// Скрипт для публикации как заранее заготовленных,
+// так и автоматически сгенерированных
+// заказов в канал nats-streaming.
+// Настраивать конфигурацию можно через список констант.
+
 package main
 
 import (
@@ -13,6 +18,16 @@ import (
 	"github.com/google/uuid"
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/nats-io/stan.go"
+)
+
+const (
+	lettersKit  = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 "
+	ferr       = "cmd.sender.main"
+	clientID   = "2"
+	totalTestsPrepared = 4
+	totalTestsRandom = 0
+	tFilesPath = "./testfiles/test"
+	maxItemsQuantity = 30
 )
 
 type Config struct {
@@ -37,16 +52,6 @@ type NatsStreamingConfig struct {
 	SubscribeSubject string `yaml:"subscribe_subject"`
 	ContainerName    string `yaml:"containername"`	
 }
-
-const (
-	lettersKit  = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 "
-	ferr       = "cmd.sender.main"
-	clientID   = "2"
-	totalTestsPrepared = 3
-	totalTestsRandom = 300
-	tFilesPath = "./misc/test"
-	maxItemsQuantity = 30
-)
 
 func main() {
 	cfg := createCfg()

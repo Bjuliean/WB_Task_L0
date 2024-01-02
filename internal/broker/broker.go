@@ -63,12 +63,14 @@ func brokerMsgHandler(logs *logs.Logger, storage *storagemanager.StorageManager)
 
 		err := json.Unmarshal(msg.Data, &order)
 		if err != nil {
+			msg.Ack()
 			logs.WriteError(ferr, err.Error())
 			return
 		}
 
 		err = storage.AddOrder(order)
 		if err != nil {
+			msg.Ack()
 			logs.WriteError(ferr, err.Error())
 			return
 		}
