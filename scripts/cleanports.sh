@@ -1,10 +1,14 @@
 #!/bin/bash
 
-source ../.env
+# source ../.env
 
-pport=$POSTGRES_PORTS
-nport=$NATS_PORTS
-sport=$SERVER_PORTS
+# pport=$POSTGRES_PORTS
+# nport=$NATS_PORTS
+# sport=$SERVER_PORTS
+
+pport=5101
+nport=4222
+sport=8082
 
 echo "The script will clear the ports used by the program: $pport, $nport, $sport."
 echo "This can be useful if the server is not running in a container."

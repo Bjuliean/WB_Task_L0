@@ -2,18 +2,21 @@
 
 START=$SECONDS
 dur=0
-time_limit=500
+time_limit=300
 
-source ../.env
+# source ../.env
 
-host=$SERVER_HOST
-port=$SERVER_PORTS
+# host=$SERVER_HOST
+# port=$SERVER_PORTS
 
-resp="$(curl -s http://localhost:8080)"
+host="0.0.0.0"
+port="8082"
+
+resp="$(curl -s http://$host:$port)"
 
 while [[ ${#resp} -eq 0 ]]
 do
-    resp="$(curl -s http://localhost:8080)"
+    resp="$(curl -s http://$host:$port)"
     sleep 1
     dur=$((SECONDS - start))
     if [[ $dur -gt $time_limit ]]

@@ -4,35 +4,35 @@ services:
     postgres:
       image: postgres:latest
       environment:
-        POSTGRES_USER: ${POSTGRES_USER}
-        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-        POSTGRES_DB: ${POSTGRES_DB}
+        POSTGRES_USER: user
+        POSTGRES_PASSWORD: user
+        POSTGRES_DB: wb_storage
         PGDATA: "/var/lib/postgresql/data/pgdata"
       ports:
-        - "${POSTGRES_PORTS}:5432"
+        - "5101:5432"
       volumes:
         - ./storage/pgdata:/var/lib/postgresql/data/pgdata
         - ./storage/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
-      container_name: ${POSTGRES_CONTAINER_NAME}
+      container_name: postgres_container
     nats-streaming:
       image: nats-streaming:latest
-      command: ["-cid", "${NATS_CLUSTER}"]
+      command: ["-cid", "show_orders_cluster"]
       ports:
-        - "${NATS_PORTS}:4222"
+        - "4222:4222"
       depends_on:
         - postgres
-      container_name: ${NATS_CONTAINER_NAME}
+      container_name: nats-streaming_container
     server:
       build:
         dockerfile: Dockerfile
         context: .
       image: my_server_image
       ports:
-        - "${SERVER_PORTS}:${SERVER_PORTS}"
+        - "8082:8082"
       environment:
         CONFIG_PATH: "./config/local.yaml"
       volumes:
         - ./logs/:/app/logs/
       depends_on:
         - nats-streaming
-      container_name: ${SERVER_CONTAINER_NAME}
+      container_name: server_container

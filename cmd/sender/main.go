@@ -17,52 +17,30 @@ import (
 	"wbl0/WB_Task_L0/internal/models"
 
 	"github.com/google/uuid"
-	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/nats-io/stan.go"
 )
 
 const (
+	host               = "nats-streaming"
+	port               = "4222"
+	clustedID          = "show_orders_cluster"
+	clientID           = "2"
+	subscribeSubject   = "streaming_orders"
 	lettersKit         = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 "
 	ferr               = "cmd.sender.main"
-	clientID           = "2"
 	totalTestsPrepared = 4
 	totalTestsRandom   = 5
 	tFilesPath         = "./testfiles/test"
 	maxItemsQuantity   = 30
 )
 
-type Config struct {
-	Postgres      PostgresConfig      `yaml:"postgres"`
-	NatsStreaming NatsStreamingConfig `yaml:"nats_streaming"`
-}
-
-type PostgresConfig struct {
-	Host          string `yaml:"host"`
-	Port          string `yaml:"port"`
-	User          string `yaml:"user"`
-	Password      string `yaml:"password"`
-	DBName        string `yaml:"dbname"`
-	ContainerName string `yaml:"containername"`
-}
-
-type NatsStreamingConfig struct {
-	Host             string `yaml:"host"`
-	Port             string `yaml:"port"`
-	ClientID         string `yaml:"client_id"`
-	ClusterID        string `yaml:"cluster_id"`
-	SubscribeSubject string `yaml:"subscribe_subject"`
-	ContainerName    string `yaml:"containername"`
-}
-
 func main() {
-	cfg := createCfg()
-
-	sc, err := stan.Connect(cfg.NatsStreaming.ClusterID, clientID, stan.NatsURL(
-		fmt.Sprintf("%s:%s", cfg.NatsStreaming.Host, cfg.NatsStreaming.Port)))
+	sc, err := stan.Connect(clustedID, clientID, stan.NatsURL(
+		fmt.Sprintf("%s:%s", host, port)))
 
 	if err != nil {
-		sc, err = stan.Connect(cfg.NatsStreaming.ClusterID, clientID, stan.NatsURL(
-			fmt.Sprintf("localhost:%s", cfg.NatsStreaming.Port)))
+		sc, err = stan.Connect(clustedID, clientID, stan.NatsURL(
+			fmt.Sprintf("localhost:%s", port)))
 		if err != nil {
 			log.Printf("%s: failed to connect nats: %s", ferr, err.Error())
 			return
@@ -72,7 +50,7 @@ func main() {
 	pTests := preparedTests()
 
 	for _, test := range pTests {
-		sc.Publish(cfg.NatsStreaming.SubscribeSubject, test)
+		sc.Publish(subscribeSubject, test)
 	}
 
 	for i := 0; i < totalTestsRandom; i++ {
@@ -83,7 +61,7 @@ func main() {
 			log.Printf("%s: failed to code order: %s", ferr, err.Error())
 		}
 
-		sc.Publish(cfg.NatsStreaming.SubscribeSubject, dt)
+		sc.Publish(subscribeSubject, dt)
 	}
 
 }
@@ -225,26 +203,4 @@ func randomStringVal(size int, roll_size bool) string {
 	}
 
 	return string(res)
-}
-
-func createCfg() *Config {
-	const ferr = "cmd.config.createCfg"
-
-	cfgPath := os.Getenv("CONFIG_PATH")
-
-	if cfgPath == "" {
-		log.Fatal("CONFIG_PATH is not set")
-	}
-
-	if _, err := os.Stat(cfgPath); err != nil {
-		log.Fatalf("%s: config file is not exists: %s", ferr, cfgPath)
-	}
-
-	var cfg Config
-
-	if err := cleanenv.ReadConfig(cfgPath, &cfg); err != nil {
-		log.Fatalf("%s: error while reading config: %s", ferr, err.Error())
-	}
-
-	return &cfg
 }
