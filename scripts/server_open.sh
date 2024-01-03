@@ -2,7 +2,7 @@
 
 START=$SECONDS
 dur=0
-time_limit=180
+time_limit=300
 
 source ../.env
 

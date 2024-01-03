@@ -7,6 +7,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"math/rand"
@@ -21,13 +22,13 @@ import (
 )
 
 const (
-	lettersKit  = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 "
-	ferr       = "cmd.sender.main"
-	clientID   = "2"
+	lettersKit         = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 "
+	ferr               = "cmd.sender.main"
+	clientID           = "2"
 	totalTestsPrepared = 4
-	totalTestsRandom = 0
-	tFilesPath = "./testfiles/test"
-	maxItemsQuantity = 30
+	totalTestsRandom   = 5
+	tFilesPath         = "./testfiles/test"
+	maxItemsQuantity   = 30
 )
 
 type Config struct {
@@ -50,16 +51,22 @@ type NatsStreamingConfig struct {
 	ClientID         string `yaml:"client_id"`
 	ClusterID        string `yaml:"cluster_id"`
 	SubscribeSubject string `yaml:"subscribe_subject"`
-	ContainerName    string `yaml:"containername"`	
+	ContainerName    string `yaml:"containername"`
 }
 
 func main() {
 	cfg := createCfg()
 
-	sc, err := stan.Connect(cfg.NatsStreaming.ClusterID, clientID)
+	sc, err := stan.Connect(cfg.NatsStreaming.ClusterID, clientID, stan.NatsURL(
+		fmt.Sprintf("%s:%s", cfg.NatsStreaming.Host, cfg.NatsStreaming.Port)))
+
 	if err != nil {
-		log.Printf("%s: failed to connect nats: %s", ferr, err.Error())
-		return
+		sc, err = stan.Connect(cfg.NatsStreaming.ClusterID, clientID, stan.NatsURL(
+			fmt.Sprintf("localhost:%s", cfg.NatsStreaming.Port)))
+		if err != nil {
+			log.Printf("%s: failed to connect nats: %s", ferr, err.Error())
+			return
+		}
 	}
 
 	pTests := preparedTests()
@@ -83,7 +90,7 @@ func main() {
 
 func preparedTests() [][]byte {
 	var res [][]byte
-	
+
 	for i := 0; i < totalTestsPrepared; i++ {
 		filePath := tFilesPath + strconv.Itoa(i) + ".json"
 		file, err := os.Open(filePath)
@@ -108,20 +115,20 @@ func randomOrder() models.Order {
 	u, _ := uuid.NewRandom()
 
 	return models.Order{
-		OrderUID:    u,
-		TrackNumber: u.String(),
-		Entry: randomStringVal(6, true),
-		Locale: randomStringVal(4, true),
+		OrderUID:          u,
+		TrackNumber:       u.String(),
+		Entry:             randomStringVal(6, true),
+		Locale:            randomStringVal(4, true),
 		InternalSignature: randomStringVal(10, false),
-		CustomerID: randomStringVal(10, false),
-		DeliveryService: randomStringVal(20, true),
-		Shardkey: randomStringVal(10, false),
-		SmID: rand.Intn(1000),
-		DateCreated: randomDate(),
-		OOFShard: randomStringVal(10, true),
-		Payment: randomPayment(u),
-		Delivery: randomDelivery(u),
-		Items: randomItems(u, u.String(), maxItemsQuantity),
+		CustomerID:        randomStringVal(10, false),
+		DeliveryService:   randomStringVal(20, true),
+		Shardkey:          randomStringVal(10, false),
+		SmID:              rand.Intn(1000),
+		DateCreated:       randomDate(),
+		OOFShard:          randomStringVal(10, true),
+		Payment:           randomPayment(u),
+		Delivery:          randomDelivery(u),
+		Items:             randomItems(u, u.String(), maxItemsQuantity),
 	}
 }
 
@@ -138,31 +145,31 @@ func randomItems(ru uuid.UUID, tr string, quantity int) []models.Item {
 
 func randomItem(ru uuid.UUID, tr string) models.Item {
 	return models.Item{
-		OrderUID: ru,
-		ChrtID: rand.Intn(10000),
+		OrderUID:    ru,
+		ChrtID:      rand.Intn(10000),
 		TrackNumber: tr,
-		Price: rand.Float64(),
-		Rid: randomStringVal(20, false),
-		Name: randomStringVal(15, true),
-		Sale: rand.Float64(),
-		Size: randomStringVal(4, true),
-		TotalPrice: rand.Float64(),
-		NmID: rand.Intn(10000),
-		Brand: randomStringVal(20, true),
-		Status: rand.Intn(999),
+		Price:       rand.Float64(),
+		Rid:         randomStringVal(20, false),
+		Name:        randomStringVal(15, true),
+		Sale:        rand.Float64(),
+		Size:        randomStringVal(4, true),
+		TotalPrice:  rand.Float64(),
+		NmID:        rand.Intn(10000),
+		Brand:       randomStringVal(20, true),
+		Status:      rand.Intn(999),
 	}
 }
 
 func randomDelivery(ru uuid.UUID) models.Delivery {
 	return models.Delivery{
 		OrderUID: ru,
-		Name: randomStringVal(20, true),
-		Phone: randomStringVal(10, false),
-		Zip: randomStringVal(20, true),
-		City: randomStringVal(20, true),
-		Address: randomStringVal(20, true),
-		Region: randomStringVal(20, true),
-		Email: randomStringVal(20, true),
+		Name:     randomStringVal(20, true),
+		Phone:    randomStringVal(10, false),
+		Zip:      randomStringVal(20, true),
+		City:     randomStringVal(20, true),
+		Address:  randomStringVal(20, true),
+		Region:   randomStringVal(20, true),
+		Email:    randomStringVal(20, true),
 	}
 }
 
@@ -170,16 +177,16 @@ func randomPayment(ru uuid.UUID) models.Payment {
 	u, _ := uuid.NewRandom()
 
 	return models.Payment{
-		OrderUID: ru,
-		Transaction: u,
-		RequestID: randomStringVal(5, false),
-		Currency: randomCurrency(),
-		Provider: randomStringVal(10, true),
-		Amount: rand.Float64(),
-		PaymentDT: rand.Intn(100000),
-		Bank: randomStringVal(20, true),
+		OrderUID:     ru,
+		Transaction:  u,
+		RequestID:    randomStringVal(5, false),
+		Currency:     randomCurrency(),
+		Provider:     randomStringVal(10, true),
+		Amount:       rand.Float64(),
+		PaymentDT:    rand.Intn(100000),
+		Bank:         randomStringVal(20, true),
 		DeliveryCost: rand.Float64(),
-		CustomFee: rand.Intn(10000),
+		CustomFee:    rand.Intn(10000),
 	}
 }
 
