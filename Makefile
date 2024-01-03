@@ -5,33 +5,50 @@ SERVER_IMAGE_NAME=my_server_image
 
 export CONFIG_PATH=./config/local.yaml
 
-all: init_config
-	go run $(SRC_APP)
-
-start: clean init_config
+all: stop
 	cd scripts && ./server_open.sh &
 	sudo docker-compose up
 
-init_config:
-	go run $(SRC_CONFIG)
+depend:
+	go mod download
+	go mod verify
 
-test: clean
+clean_start: clean
+	cd scripts && ./server_open.sh &
 	sudo docker-compose up
 
-t:
+clean_start_with_send: clean
+	cd scripts && ./server_open.sh &
+	sudo docker-compose up
 	sudo docker exec -it server_container go run ./cmd/sender/main.go
 
-tc: init_config
-	sudo docker compose config
+silent_start_with_send: clean
+	cd scripts && ./server_open.sh &
+	sudo docker-compose up -d
+	sudo docker exec -it server_container go run ./cmd/sender/main.go
 
-send:
+server: init_config
+	go run $(SRC_APP)
+
+send: init_config
 	go run $(SRC_SENDER)
+
+send_docker:
+	sudo docker exec -it server_container go run ./cmd/sender/main.go
+
+init_config:
+	go run $(SRC_CONFIG)
 
 clean_ports:
 	cd scripts && ./cleanports.sh
 
 clean:
 	sudo docker-compose down
-	sudo docker container prune
 	sudo rm -rf storage/pgdata
 	rm -rf logs/logs.txt
+
+stop:
+	sudo docker-compose stop
+
+cleanall: clean
+	sudo docker rmi $(SERVER_IMAGE_NAME)

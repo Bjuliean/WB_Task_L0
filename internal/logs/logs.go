@@ -52,16 +52,16 @@ func (l *Logger) Close() {
 
 func (l *Logger) WriteError(ferr, err string) {
 	if l.silenceMode == false {
-		l.logsToFile.Error(fmt.Sprintf("%s: %s\n", ferr, err))
 		l.logsToStd.Error(fmt.Sprintf("%s: %s\n", ferr, err))
 	}
+	l.logsToFile.Error(fmt.Sprintf("%s: %s\n", ferr, err))
 }
 
 func (l *Logger) WriteInfo(info string) {
 	if l.silenceMode == false {
-		l.logsToFile.Info(fmt.Sprintf("%s\n", info))
 		l.logsToStd.Info(fmt.Sprintf("%s\n", info))
 	}
+	l.logsToFile.Info(fmt.Sprintf("%s\n", info))
 }
 
 func (l *Logger) SilenceOperatingMode(mode bool) {

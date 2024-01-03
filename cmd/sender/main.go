@@ -26,7 +26,7 @@ const (
 	ferr               = "cmd.sender.main"
 	clientID           = "2"
 	totalTestsPrepared = 4
-	totalTestsRandom   = 2000
+	totalTestsRandom   = 5
 	tFilesPath         = "./testfiles/test"
 	maxItemsQuantity   = 30
 )
