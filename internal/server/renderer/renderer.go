@@ -6,8 +6,8 @@ import (
 	"wbl0/WB_Task_L0/internal/models"
 )
 
-const(
-	homePagePath = "templates/home_page.html"
+const (
+	homePagePath  = "templates/home_page.html"
 	orderPagePath = "templates/order_page.html"
 )
 

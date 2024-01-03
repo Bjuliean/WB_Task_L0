@@ -39,7 +39,7 @@ send_docker:
 init_config:
 	go run $(SRC_CONFIG)
 
-clean_ports:
+clean_ports: init_config
 	cd scripts && ./cleanports.sh
 
 clean:

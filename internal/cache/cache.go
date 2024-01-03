@@ -10,7 +10,7 @@ import (
 )
 
 type Cache struct {
-	mu sync.RWMutex
+	mu          sync.RWMutex
 	storage     map[string]models.Order
 	logsHandler *logs.Logger
 }
@@ -75,7 +75,7 @@ func (c *Cache) GetOrder(uid uuid.UUID) (*models.Order, error) {
 func (c *Cache) ReloadCache(orders []models.Order) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	
+
 	for k := range c.storage {
 		delete(c.storage, k)
 	}

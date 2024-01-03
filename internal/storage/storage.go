@@ -119,7 +119,7 @@ func (s *Storage) GetOrders() ([]models.Order, error) {
 			s.logsHandler.WriteError(ferr, err.Error())
 			return nil, err
 		}
-		singleOrder.DateCreated.Format("02 January 2006 15:04:05") //???
+
 		res = append(res, singleOrder)
 	}
 

@@ -9,7 +9,7 @@ services:
         POSTGRES_DB: ${POSTGRES_DB}
         PGDATA: "/var/lib/postgresql/data/pgdata"
       ports:
-        - "${POSTGRES_PORTS}:${POSTGRES_PORTS}"
+        - "${POSTGRES_PORTS}:5432"
       volumes:
         - ./storage/pgdata:/var/lib/postgresql/data/pgdata
         - ./storage/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -18,7 +18,7 @@ services:
       image: nats-streaming:latest
       command: ["-cid", "${NATS_CLUSTER}"]
       ports:
-        - "${NATS_PORTS}:${NATS_PORTS}"
+        - "${NATS_PORTS}:4222"
       depends_on:
         - postgres
       container_name: ${NATS_CONTAINER_NAME}

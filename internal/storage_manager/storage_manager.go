@@ -23,7 +23,7 @@ func New(db *storage.Storage, cch *cache.Cache, logs *logs.Logger) StorageManage
 		log.Fatalf("cache initialize failed")
 	}
 	cch.ReloadCache(tmp)
-	
+
 	return StorageManager{
 		database:     db,
 		cacheStorage: cch,
@@ -63,7 +63,7 @@ func (s *StorageManager) GetOrder(uid uuid.UUID) (*models.Order, error) {
 			s.logsHandler.WriteError(msg, err.Error())
 			return &models.Order{}, err
 		}
-		
+
 		s.logsHandler.WriteInfo(fmt.Sprintf("%v: not found in cache, recorded in db", uid))
 		s.cacheStorage.CreateOrder(*res)
 	}
@@ -80,7 +80,7 @@ func (s *StorageManager) GetOrders() ([]models.Order, error) {
 	if err != nil {
 		s.logsHandler.WriteError(ferr, err.Error())
 		return nil, err
-	} 
+	}
 
 	return res, nil
 }
