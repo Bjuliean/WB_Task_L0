@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"wbl0/WB_Task_L0/internal/config"
@@ -15,6 +16,7 @@ import (
 type Server struct {
 	srv http.Server
 	cfg *config.Config
+	ctx *context.Context
 }
 
 type HFuncList struct {
@@ -23,7 +25,7 @@ type HFuncList struct {
 	OrderSaver   saveorder.OrderSaver
 }
 
-func New(cfg *config.Config, hf HFuncList) *Server {
+func New(cfg *config.Config, hf HFuncList, ctx *context.Context) *Server {
 	return &Server{
 		srv: http.Server{
 			Addr:         fmt.Sprintf("%s:%s", cfg.Server.Host, cfg.Server.Port),
@@ -33,11 +35,16 @@ func New(cfg *config.Config, hf HFuncList) *Server {
 			IdleTimeout:  cfg.Server.IdleTimeout,
 		},
 		cfg: cfg,
+		ctx: ctx,
 	}
 }
 
 func (s *Server) Start() {
 	s.srv.ListenAndServe()
+}
+
+func (s *Server) Stop() {
+	s.srv.Shutdown(*s.ctx)
 }
 
 func createRouter(hf HFuncList) *chi.Mux {

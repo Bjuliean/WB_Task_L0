@@ -1,9 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"os/signal"
+	"syscall"
 	"wbl0/WB_Task_L0/internal/broker"
 	"wbl0/WB_Task_L0/internal/cache"
+	"wbl0/WB_Task_L0/internal/closer"
 	"wbl0/WB_Task_L0/internal/config"
 	"wbl0/WB_Task_L0/internal/logs"
 	"wbl0/WB_Task_L0/internal/server"
@@ -17,7 +21,6 @@ const (
 
 func main() {
 	logsHandler := logs.New(logsPath)
-	defer logsHandler.Close()
 	//logsHandler.SilenceOperatingMode(true) //-- Выключает логи
 
 	logsHandler.WriteInfo("loading config...")
@@ -25,7 +28,6 @@ func main() {
 
 	logsHandler.WriteInfo("connecting to database...")
 	db := storage.New(cfg, logsHandler)
-	defer db.CloseConnection()
 
 	logsHandler.WriteInfo("creating cache...")
 	cache := cache.New(logsHandler)
@@ -34,18 +36,29 @@ func main() {
 	logsHandler.WriteInfo("connecting to nats-streaming...")
 	nats := broker.New(cfg, &storageManager, logsHandler)
 	nats.SubscribeAndHandle()
-	defer nats.CloseConnection()
+
+	ctx, cancel := signal.NotifyContext(context.Background(),
+		syscall.SIGINT, syscall.SIGTERM)
+	defer cancel()
 
 	srv := server.New(cfg, server.HFuncList{
 		OrderGetter:  &storageManager,
 		OrdersGetter: &storageManager,
 		OrderSaver:   &storageManager,
-	})
+	}, &ctx)
+
+	closer := closer.New()
+	closer.AddToList(logsHandler.Close, db.CloseConnection,
+		nats.CloseConnection, srv.Stop)
 
 	logsHandler.WriteInfo(fmt.Sprintf("SERVER STARTED [%s:%s]",
 		cfg.Server.Host, cfg.Server.Port))
 
-	srv.Start()
+	go func() {
+		srv.Start()
+	}()
 
-	logsHandler.WriteInfo("SERVER CLOSED")
+	<-ctx.Done()
+	logsHandler.WriteInfo("CLOSING SERVER...")
+	closer.Shutdown()
 }

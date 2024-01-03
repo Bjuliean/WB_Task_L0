@@ -37,7 +37,7 @@ func New(cfg *config.Config, storage *storagemanager.StorageManager, logsHandler
 	}
 }
 
-func (b *Broker) CloseConnection() { // todo: close error
+func (b *Broker) CloseConnection() {
 	b.cn.Close()
 }
 
