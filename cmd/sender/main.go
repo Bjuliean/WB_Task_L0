@@ -193,7 +193,7 @@ func randomDate() time.Time {
 
 func randomStringVal(size int, roll_size bool) string {
 	if roll_size {
-		size = rand.Intn(size)
+		size = rand.Intn(size) + 1
 	}
 
 	res := make([]byte, size)
