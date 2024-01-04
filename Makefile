@@ -22,7 +22,7 @@ clean_start_with_send: clean
 	sudo docker-compose up
 	sudo docker exec -it server_container go run ./cmd/sender/main.go
 
-silent_start_with_send: clean
+silent_start_with_send: stop
 	cd scripts && ./server_open.sh &
 	sudo docker-compose up -d
 	sudo docker exec -it server_container go run ./cmd/sender/main.go
